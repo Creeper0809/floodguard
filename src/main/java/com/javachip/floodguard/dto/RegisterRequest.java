@@ -12,10 +12,10 @@ import lombok.ToString;
 @ToString
 @Getter
 @Setter
-public class JoinRequest {
+public class RegisterRequest {
 
-    @NotBlank(message = "로그인 아이디가 비어있습니다.")
-    private String userid;
+    @NotBlank(message = "이메일이 비어있습니다.")
+    private String email;
 
     @NotBlank(message = "유저이름이 비어있습니다.")
     private String username;
@@ -24,19 +24,10 @@ public class JoinRequest {
     private String password;
     private String passwordCheck;
 
-    public User toEntity() {
-
-        return User.builder()
-                .userid(this.userid)
-                .password(this.password)
-                .username(this.username)
-                .role(UserRole.USER)
-                .build();
-    }
     public User toEntity(String encodedPassword) {
 
         return User.builder()
-                .userid(this.userid)
+                .email(this.email)
                 .password(encodedPassword)
                 .username(this.username)
                 .role(UserRole.ADMIN)
