@@ -21,7 +21,7 @@ import java.util.ArrayList;
 @Component
 @RequiredArgsConstructor
 public class CCTVApi{
-    @Value("${cctvpublickey}")
+    @Value("${cctv.publickey}")
     private String publickey;
     public ArrayList<CCTVRequest> getCCTV(String minCoordx,String minCoordy,String maxCoordx,String maxCoordy){
         ArrayList<CCTVRequest> result = new ArrayList<>();
@@ -39,7 +39,7 @@ public class CCTVApi{
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Content-type", "text/xml;charset=UTF-8");
-            System.out.println("Response code: " + conn.getResponseCode());
+
             BufferedReader rd;
             if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
                 rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -51,19 +51,21 @@ public class CCTVApi{
             while ((line = rd.readLine()) != null) {
                 sb.append(line);
             }
+
             JSONObject responseJson = (JSONObject) new JSONParser().parse(sb.toString());
             JSONObject responseJson2 = (JSONObject) responseJson.get("response");
-            if(responseJson2 == null){
+
+            if(responseJson2 == null)
                 return result;
-            }
+
             JSONArray arr = (JSONArray) responseJson2.get("data");
             if (arr.size() > 0) {
                 for (int i = 0; i < arr.size(); i++) {
                     JSONObject jsonObj = (JSONObject) arr.get(i);
                     CCTVRequest temp = new CCTVRequest();
                     temp.videoURL = (String) jsonObj.get("cctvurl");
-                    temp.coordx = (String) jsonObj.get("coordx");
-                    temp.coordy = (String) jsonObj.get("coordy");
+                    temp.coordx = (double) jsonObj.get("coordx");
+                    temp.coordy = (double) jsonObj.get("coordy");
                     temp.name = (String) jsonObj.get("cctvname");
                     result.add(temp);
                 }

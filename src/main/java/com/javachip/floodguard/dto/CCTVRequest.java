@@ -1,8 +1,11 @@
 package com.javachip.floodguard.dto;
 
+import lombok.Data;
+
+@Data
 public class CCTVRequest {
-    public String coordy;
-    public String coordx;
+    public double coordy;
+    public double coordx;
     public String videoURL;
     public String name;
 }
