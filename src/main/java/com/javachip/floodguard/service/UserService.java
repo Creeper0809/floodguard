@@ -1,7 +1,7 @@
 package com.javachip.floodguard.service;
 
-import com.javachip.floodguard.dto.RegisterRequest;
-import com.javachip.floodguard.dto.LoginRequest;
+import com.javachip.floodguard.dto.RegisterRequestDTO;
+import com.javachip.floodguard.dto.LoginRequestDTO;
 import com.javachip.floodguard.entity.User;
 import com.javachip.floodguard.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -48,11 +48,11 @@ public class UserService {
     }
 
 
-    public void register(RegisterRequest req) {
+    public void register(RegisterRequestDTO req) {
         userRepository.save(req.toEntity(encoder.encode(req.getPassword())));
     }
 
-    public User login(LoginRequest req) {
+    public User login(LoginRequestDTO req) {
         Optional<User> optionalUser;
 
         if(checkEmailOrUsername(req.getUserid())) {

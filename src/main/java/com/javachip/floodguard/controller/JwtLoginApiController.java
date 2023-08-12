@@ -1,17 +1,14 @@
 package com.javachip.floodguard.controller;
 
-import com.javachip.floodguard.dto.RegisterRequest;
-import com.javachip.floodguard.dto.LoginRequest;
+import com.javachip.floodguard.dto.RegisterRequestDTO;
+import com.javachip.floodguard.dto.LoginRequestDTO;
 import com.javachip.floodguard.entity.User;
 import com.javachip.floodguard.jwt.JwtTokenUtil;
 import com.javachip.floodguard.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.http.HttpHeaders;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,29 +22,29 @@ public class JwtLoginApiController {
     private String secretKey;
 
     @PostMapping("/register")
-    public String join(@RequestBody RegisterRequest registerRequest) {
+    public String join(@RequestBody RegisterRequestDTO registerRequestDTO) {
 
         // loginId 중복 체크
-        if(userService.checkEmailDuplicate(registerRequest.getEmail())) {
+        if(userService.checkEmailDuplicate(registerRequestDTO.getEmail())) {
             return "이메일이 중복됩니다.";
         }
         // 닉네임 중복 체크
-        if(userService.checkNicknameDuplicate(registerRequest.getUsername())) {
+        if(userService.checkNicknameDuplicate(registerRequestDTO.getUsername())) {
             return "유저 이름이 중복됩니다.";
         }
         // password와 passwordCheck가 같은지 체크
-        if(!registerRequest.getPassword().equals(registerRequest.getPasswordCheck())) {
+        if(!registerRequestDTO.getPassword().equals(registerRequestDTO.getPasswordCheck())) {
             return"바밀번호가 일치하지 않습니다.";
         }
 
-        userService.register(registerRequest);
+        userService.register(registerRequestDTO);
         return "회원가입 성공";
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest loginRequest) {
+    public String login(@RequestBody LoginRequestDTO loginRequestDTO) {
 
-        User user = userService.login(loginRequest);
+        User user = userService.login(loginRequestDTO);
 
         String userid;
 
@@ -60,7 +57,7 @@ public class JwtLoginApiController {
 
         long expireTimeMs = 1000 * 60 * 60;     // Token 유효 시간 = 60분
 
-        if(userService.checkEmailOrUsername(loginRequest.getUserid())) {
+        if(userService.checkEmailOrUsername(loginRequestDTO.getUserid())) {
             userid = user.getEmail();
         } else {
             userid = user.getUsername();

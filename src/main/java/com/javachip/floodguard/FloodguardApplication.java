@@ -30,14 +30,19 @@ public class FloodguardApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FloodguardApplication.class, args);
 	}
-	@Scheduled(fixedRate = 5000)
+	@Scheduled(fixedRate = 115000)
 	public void test() throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, URISyntaxException, JsonProcessingException {
 //		var result = cctv.getCCTV("126.800000","34.900000","127.890000","35.100000");
 //		for(var i : result){
 //			System.out.println(i.name);
 //		}
-		//floodAlert.getFloodAlert();
-		service.sendSms(MessageDTO.builder().to("01037258283").content("히히").build());
+		var a = floodAlert.getFloodAlert();
+		for(var i: a){
+			System.out.println(i.getWhere());
+			System.out.println(i.getDate());
+			System.out.println(i.getKind());
+		}
+		//service.sendSms(MessageDTO.builder().to("01037258283").content("히히").build());
 	}
 
 }
