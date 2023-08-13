@@ -16,10 +16,7 @@ public class Favorite {
     private Long id;
 
     @Column
-    private String userid;
-    private String pinid;
-
-    UserRole role;
-
+    private Long userid;
+    private Long pinid;
 
 }

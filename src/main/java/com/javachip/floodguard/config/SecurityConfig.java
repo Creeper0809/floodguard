@@ -60,6 +60,8 @@ public class SecurityConfig {
 
                 .authorizeRequests((requests) -> requests
                         .requestMatchers("/", "/css/**", "/images/**", "/js/**","/api/v1/users/**").permitAll()
+                        //테스트용
+                        .requestMatchers("/api/v1/pins/**","/api/v1/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form

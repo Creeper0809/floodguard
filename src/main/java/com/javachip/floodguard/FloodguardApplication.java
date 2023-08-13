@@ -36,12 +36,12 @@ public class FloodguardApplication {
 //		for(var i : result){
 //			System.out.println(i.name);
 //		}
-		var a = floodAlert.getFloodAlert();
-		for(var i: a){
-			System.out.println(i.getWhere());
-			System.out.println(i.getDate());
-			System.out.println(i.getKind());
-		}
+//		var a = floodAlert.getFloodAlert();
+//		for(var i: a){
+//			System.out.println(i.getWhere());
+//			System.out.println(i.getDate());
+//			System.out.println(i.getKind());
+//		}
 		//service.sendSms(MessageDTO.builder().to("01037258283").content("히히").build());
 	}
 

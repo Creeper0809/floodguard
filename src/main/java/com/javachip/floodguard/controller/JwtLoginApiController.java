@@ -56,13 +56,7 @@ public class JwtLoginApiController {
         // 로그인 성공 => Jwt Token 발급
 
         long expireTimeMs = 1000 * 60 * 60;     // Token 유효 시간 = 60분
-
-        if(userService.checkEmailOrUsername(loginRequestDTO.getUserid())) {
-            userid = user.getEmail();
-        } else {
-            userid = user.getUsername();
-        }
-
+        userid = user.getUsername();
         String jwtToken = JwtTokenUtil.createToken(userid, secretKey, expireTimeMs);
 
         return jwtToken;
@@ -86,4 +80,6 @@ public class JwtLoginApiController {
     public String adminPage() {
         return "관리자 페이지 접근 성공";
     }
+    @GetMapping("/test")
+    public String testPage(){return "ㅁㄴㅇㅁㄴㅇ";}
 }

@@ -15,4 +15,12 @@ public class Pin {
     @Id //대표값 지정
     @GeneratedValue(strategy = GenerationType.IDENTITY) //db에서 자동으로 번호 생성
     private Long id;
+
+    @Column
+    private String coordx;
+    private String coordy;
+    private String comment;
+    private String pos;
+    private String alertpos;
+    private int type;
 }

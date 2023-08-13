@@ -46,6 +46,16 @@ public class UserService {
             return false;
         }
     }
+    public static boolean isValidEmail(String email) {
+        boolean err = false;
+        String regex = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(email);
+        if(m.matches()) {
+            err = true;
+        }
+        return err;
+    }
 
 
     public void register(RegisterRequestDTO req) {
@@ -55,10 +65,10 @@ public class UserService {
     public User login(LoginRequestDTO req) {
         Optional<User> optionalUser;
 
-        if(checkEmailOrUsername(req.getUserid())) {
-            optionalUser = userRepository.findByEmail(req.getUserid());
-        } else {
+        if(isValidEmail(req.getUserid())) {
             optionalUser = userRepository.findByUsername(req.getUserid());
+        } else {
+            optionalUser = userRepository.findByEmail(req.getUserid());
         }
 
         if(optionalUser.isEmpty()) {
@@ -77,7 +87,7 @@ public class UserService {
 
         Optional<User> optionalUser;
 
-        if(checkEmailOrUsername(loginId)) {
+        if(isValidEmail(loginId)) {
             optionalUser = userRepository.findByEmail(loginId);
         } else {
             optionalUser = userRepository.findByUsername(loginId);
