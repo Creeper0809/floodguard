@@ -24,12 +24,16 @@ public class RegisterRequestDTO {
     private String password;
     private String passwordCheck;
 
+    @NotBlank(message = "휴대폰번호가 비어있습니다.")
+    private String phonenumber;
+
     public User toEntity(String encodedPassword) {
 
         return User.builder()
                 .email(this.email)
                 .password(encodedPassword)
                 .username(this.username)
+                .phonenumber(this.phonenumber)
                 .role(UserRole.ADMIN)
                 .build();
     }

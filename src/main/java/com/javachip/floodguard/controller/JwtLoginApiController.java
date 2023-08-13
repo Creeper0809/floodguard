@@ -24,13 +24,53 @@ public class JwtLoginApiController {
     @PostMapping("/register")
     public String join(@RequestBody RegisterRequestDTO registerRequestDTO) {
 
-        // loginId 중복 체크
+        //null 값 체크
+        if(registerRequestDTO.getEmail() == null) {
+            return "이메일이 비었습니다.";
+        }
+
+        if(registerRequestDTO.getUsername() == null) {
+            return "유저이름이 비었습니다.";
+        }
+
+        if(registerRequestDTO.getPassword() == null) {
+            return "비밀번호가 비었습니다.";
+        }
+
+        if(registerRequestDTO.getPasswordCheck() == null) {
+            return "비밀번호 확인란이 비었습니다.";
+        }
+
+        if(registerRequestDTO.getPhonenumber() == null) {
+            return "휴대폰 번호가 비었습니다.";
+        }
+        // email 중복 체크
         if(userService.checkEmailDuplicate(registerRequestDTO.getEmail())) {
             return "이메일이 중복됩니다.";
         }
-        // 닉네임 중복 체크
+        // 유저 이름 중복 체크
         if(userService.checkNicknameDuplicate(registerRequestDTO.getUsername())) {
             return "유저 이름이 중복됩니다.";
+        }
+        // 전화번호 중복 체크
+        if(userService.checkPhoneNumberDuplicate(registerRequestDTO.getPhonenumber())) {
+            return "전화번호가 중복됩니다.";
+        }
+        // email 형식 체크
+        if(!userService.isValidEmail(registerRequestDTO.getEmail())) {
+            return "올바른 이메일 형식을 입력해주세요.";
+        }
+        // 전화번호 형식 체크
+        if(!userService.checkPhoneNumber(registerRequestDTO.getPhonenumber())) {
+            return "전화번호 형식이 올바르지 않습니다.";
+        }
+        // email 길이 체크
+        if(userService.checkEmailLength(registerRequestDTO.getEmail())) {
+            return "이메일은 최대 200자리 까지입니다.";
+        }
+        // username 길이 체크
+        if(userService.checkUsernameLength(registerRequestDTO.getUsername())) {
+            return "유저이름은 최소 4자리 ~ 최대 50자리까지 입니다.";
         }
         // password와 passwordCheck가 같은지 체크
         if(!registerRequestDTO.getPassword().equals(registerRequestDTO.getPasswordCheck())) {
@@ -61,8 +101,6 @@ public class JwtLoginApiController {
 
         return jwtToken;
     }
-
-
     @GetMapping("/info")
     public String userInfo(@RequestHeader(value = "Authorization") String header) {
 
@@ -73,9 +111,6 @@ public class JwtLoginApiController {
         return String.format("loginId : %s\nnickname : %s\nrole : %s",
                 loginUser.getId(), loginUser.getUsername(), loginUser.getRole().name());
     }
-
-
-
     @GetMapping("/admin")
     public String adminPage() {
         return "관리자 페이지 접근 성공";

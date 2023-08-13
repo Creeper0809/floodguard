@@ -24,7 +24,6 @@ public class UserService {
 
     private final BCryptPasswordEncoder encoder;
 
-
     public boolean checkEmailDuplicate(String userid) { //이메일 중복 체크
         return userRepository.existsByEmail(userid);
     }
@@ -33,20 +32,33 @@ public class UserService {
         return userRepository.existsByUsername(username);
     }
 
-    public boolean checkEmailOrUsername(String userid) {
-        String regex = "^[a-zA-Z0-9_+&*-]+(?:\\." +
-        "[a-zA-Z0-9_+&*-]+)*@" +
-                "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
-                "A-Z]{2,7}$";
+    public boolean checkPhoneNumberDuplicate(String phoneNumber) {  //휴대전화 중복 체크
+        return userRepository.existsByPhonenumber(phoneNumber);
+    }
+    public boolean checkPhoneNumber(String phoneNumber) {   //휴대전화 형식 체크
+        String regex = "^01(?:0|1|[6-9])\\d{4}\\d{4}$";
+
         Pattern p = Pattern.compile(regex);
-        Matcher m = p.matcher(userid);
+        Matcher m = p.matcher(phoneNumber);
+
         if(m.matches()) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
-    public static boolean isValidEmail(String email) {
+    public boolean checkEmailLength(String email) {     // 이메일 길이 체크(100자리까지 제한) 최소길이 제한 하지 않는 이유: 최소한의 형식은 맞춰야 하기 때문
+        if(email.length() > 100) {
+            return true;
+        }
+        return false;
+    }
+    public boolean checkUsernameLength(String username) { //유저 이름 이름 체크(4 ~ 50자리까지 제한)
+        if(username.length() < 4 || username.length() > 50) {
+            return true;
+        }
+        return false;
+    }
+    public boolean isValidEmail(String email) { // 이메일 형식 체크
         boolean err = false;
         String regex = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$";
         Pattern p = Pattern.compile(regex);
@@ -56,8 +68,6 @@ public class UserService {
         }
         return err;
     }
-
-
     public void register(RegisterRequestDTO req) {
         userRepository.save(req.toEntity(encoder.encode(req.getPassword())));
     }
