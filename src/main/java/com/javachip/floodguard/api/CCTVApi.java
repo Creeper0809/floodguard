@@ -56,17 +56,28 @@ public class CCTVApi{
 
             if(responseJson2 == null)
                 return result;
-
-            JSONArray arr = (JSONArray) responseJson2.get("data");
-            if (arr.size() > 0) {
-                for (int i = 0; i < arr.size(); i++) {
-                    JSONObject jsonObj = (JSONObject) arr.get(i);
-                    CCTVRequestDTO temp = new CCTVRequestDTO();
-                    temp.videoURL = (String) jsonObj.get("cctvurl");
-                    temp.coordx = (double) jsonObj.get("coordx");
-                    temp.coordy = (double) jsonObj.get("coordy");
-                    temp.name = (String) jsonObj.get("cctvname");
-                    result.add(temp);
+            System.out.println(responseJson2);
+            if((int)responseJson2.get("datacount") == 1){
+                JSONObject jsonObj = (JSONObject) responseJson2.get("data");
+                CCTVRequestDTO temp = new CCTVRequestDTO();
+                temp.videoURL = (String) jsonObj.get("cctvurl");
+                temp.coordx = (double) jsonObj.get("coordx");
+                temp.coordy = (double) jsonObj.get("coordy");
+                temp.name = (String) jsonObj.get("cctvname");
+                result.add(temp);
+            }
+            else {
+                JSONArray arr = (JSONArray) responseJson2.get("data");
+                if (arr.size() > 0) {
+                    for (int i = 0; i < arr.size(); i++) {
+                        JSONObject jsonObj = (JSONObject) arr.get(i);
+                        CCTVRequestDTO temp = new CCTVRequestDTO();
+                        temp.videoURL = (String) jsonObj.get("cctvurl");
+                        temp.coordx = (double) jsonObj.get("coordx");
+                        temp.coordy = (double) jsonObj.get("coordy");
+                        temp.name = (String) jsonObj.get("cctvname");
+                        result.add(temp);
+                    }
                 }
             }
             rd.close();
@@ -77,6 +88,12 @@ public class CCTVApi{
         catch (ParseException e) {
             throw new RuntimeException(e);
         }
+        return result;
+    }
+    public double getDistance(Double x1,String x2,Double y1,String y2){
+        double dx2 = Double.parseDouble(x2);
+        double dy2 = Double.parseDouble(y2);
+        double result = Math.sqrt(Math.pow(x1 - dx2,2) + Math.pow(y1-dy2,2) * Math.cos(y1) * Math.cos(dy2));
         return result;
     }
 }
