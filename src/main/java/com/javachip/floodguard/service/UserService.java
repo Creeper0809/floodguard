@@ -61,6 +61,7 @@ public class UserService {
         return false;
     }
     public boolean isValidEmail(String email) { // 이메일 형식 체크
+        log.info(email);
         boolean err = false;
         String regex = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$";
         Pattern p = Pattern.compile(regex);
@@ -77,10 +78,12 @@ public class UserService {
     public User login(LoginRequestDTO req) {
         Optional<User> optionalUser;
 
-        if(isValidEmail(req.getUserid())) {
+        if(!isValidEmail(req.getUserid())) {
             optionalUser = userRepository.findByUsername(req.getUserid());
+            log.info("유저네임");
         } else {
             optionalUser = userRepository.findByEmail(req.getUserid());
+            log.info("유저아이디");
         }
 
         if(optionalUser.isEmpty()) {

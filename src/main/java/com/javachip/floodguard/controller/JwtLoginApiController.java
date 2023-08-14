@@ -25,6 +25,8 @@ public class JwtLoginApiController {
     @PostMapping("/register")
     public ResponseEntity<String> join(@RequestBody RegisterRequestDTO registerRequestDTO) {
 
+        log.info(registerRequestDTO.getPassword());
+
         //null 값 체크
         if (registerRequestDTO.getEmail() == "") {
             return ResponseEntity.status(300).build();
