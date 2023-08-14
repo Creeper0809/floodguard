@@ -24,6 +24,7 @@ import java.util.ArrayList;
 public class FloodAlertAPI {
     @Value("${floodalert.publickey}")
     private String publickey;
+    LocalDateTime currentDate = LocalDateTime.now();
     public ArrayList<FloodAPIRequestDTO> getFloodAlert(){
         ArrayList<FloodAPIRequestDTO> result = new ArrayList<>();
         try {
@@ -41,13 +42,10 @@ public class FloodAlertAPI {
             while ((line = rd.readLine()) != null) {
                 sb.append(line);
             }
-
             JSONObject responseJson = (JSONObject) new JSONParser().parse(sb.toString());
             JSONArray arr = (JSONArray) responseJson.get("content");
-            if (arr.size() > 0) {
+            if (arr != null && arr.size() > 0) {
                 //가장 최근에 갱신한 시간으로 교환 예정
-                LocalDateTime currentDate = LocalDateTime.now();
-                LocalDateTime beforeDay = currentDate.minusDays(1);
                 for (int i = 0; i < arr.size(); i++) {
                     JSONObject jsonObj = (JSONObject) arr.get(i);
                     FloodAPIRequestDTO temp = new FloodAPIRequestDTO();
@@ -56,11 +54,12 @@ public class FloodAlertAPI {
                     temp.setDate((String) jsonObj.get("sttcurdt"));
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
                     LocalDateTime inputDate = LocalDateTime.parse(temp.getDate(), formatter);
-                    if(inputDate.isBefore(beforeDay))
+                    if(inputDate.isBefore(currentDate))
                         break;
                     result.add(temp);
                 }
             }
+            currentDate = LocalDateTime.now();
             rd.close();
             conn.disconnect();
         }
