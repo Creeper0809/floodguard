@@ -8,4 +8,5 @@ public class CCTVRequestDTO {
     public double coordx;
     public String videoURL;
     public String name;
+    public String alertpos;
 }

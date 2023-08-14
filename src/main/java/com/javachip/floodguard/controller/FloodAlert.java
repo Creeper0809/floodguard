@@ -24,13 +24,13 @@ public class FloodAlert {
     public Response createFavoritePin(){
         return Response.success(null);
     }
-    @GetMapping("favoritepin")
+    @GetMapping("/favoritepin")
     public Response getFavoritePin(){
         return Response.success(null);
     }
     @GetMapping("/{pos}")
     public Response testFloodAlert(@PathVariable("pos")String pos) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
-        floodAlertService.alert(pos);
+        floodAlertService.alert(pos,"테스트 경보");
         return Response.success(null);
     }
 }

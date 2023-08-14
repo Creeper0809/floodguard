@@ -22,7 +22,7 @@ public class FloodAlertService {
     private final FavoriteRepository favoriteRepository;
     private final UserRepository userRepository;
     private final SmsService smsService;
-    public void alert(String pos) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
+    public void alert(String pos , String kind) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
         var alertedPosPin = pinRepository.findAllByalertpos(pos);
         for(var i : alertedPosPin){
             var concernPeople = favoriteRepository.findAllBypinid(i.getId());
@@ -30,7 +30,7 @@ public class FloodAlertService {
                 var person = userRepository.findByid(j.getUserid()).get();
                 var message =MessageDTO.builder()
                                 .to(person.getPhonenumber())
-                                        .content("[홍수 위험]" + i.getPos());
+                                .content("[홍수 위험]\n" + "관심사로 등록하신 "+i.getPos()+"지역에서 홍수 위험이 있습니다.\n 안전에 유의하세요.\n"+kind);
                 smsService.sendSms(message.build());
             }
         }

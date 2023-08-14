@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.javachip.floodguard.api.CCTVApi;
 import com.javachip.floodguard.api.FloodAlertAPI;
 import com.javachip.floodguard.dto.MessageDTO;
+import com.javachip.floodguard.service.FloodAlertService;
+import com.javachip.floodguard.service.PinService;
 import com.javachip.floodguard.service.SmsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,17 +18,17 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.StringJoiner;
 
 @SpringBootApplication
 @RequiredArgsConstructor
 @EnableScheduling
 public class FloodguardApplication {
 	@Autowired
-	private final CCTVApi cctv;
-	@Autowired
 	private final FloodAlertAPI floodAlert;
+	private final FloodAlertService floodAlertService;
 	@Autowired
-	private final SmsService service;
+	private final PinService service;
 	public static void main(String[] args) {
 		SpringApplication.run(FloodguardApplication.class, args);
 	}
@@ -44,5 +46,13 @@ public class FloodguardApplication {
 //		}
 		//service.sendSms(MessageDTO.builder().to("01037258283").content("히히").build());
 	}
-
+	@Scheduled(fixedRate = 1000 * 60 * 5)
+	public void sendFloodAlert() throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
+		var temp = floodAlert.getFloodAlert();
+		for(var i : temp){
+			if(i.getKind().contains("발령") && i.getWhere().contains("서울시")){
+				floodAlertService.alert(i.getWhere(),i.getKind());
+			}
+		}
+	}
 }

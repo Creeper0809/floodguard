@@ -13,4 +13,6 @@ public class PinListResponseDTO {
     private Long no;
     private String coordx;
     private String coordy;
+    private String name;
+    private int type;
 }

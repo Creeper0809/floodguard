@@ -2,6 +2,7 @@ package com.javachip.floodguard.controller;
 
 import com.javachip.floodguard.dto.LoginRequestDTO;
 import com.javachip.floodguard.dto.PinListResponseDTO;
+import com.javachip.floodguard.dto.PinMoreInfoResponseDTO;
 import com.javachip.floodguard.response.ListResponse;
 import com.javachip.floodguard.response.Response;
 import com.javachip.floodguard.service.PinService;
@@ -24,5 +25,10 @@ public class PinController {
     @PostMapping("/pin")
     public Response createPin(@RequestBody LoginRequestDTO loginRequestDTO){
         return Response.success(null);
+    }
+    @GetMapping("/pin/{no}")
+    public Response<PinMoreInfoResponseDTO> getPin(@PathVariable("no")Long no){
+        var arr = pinService.getPinInfo(no);
+        return Response.success(arr);
     }
 }
