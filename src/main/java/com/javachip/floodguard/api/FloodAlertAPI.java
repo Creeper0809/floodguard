@@ -3,6 +3,7 @@ package com.javachip.floodguard.api;
 import com.javachip.floodguard.dto.CCTVRequestDTO;
 import com.javachip.floodguard.dto.FloodAPIRequestDTO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -19,6 +20,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class FloodAlertAPI {
@@ -43,6 +46,7 @@ public class FloodAlertAPI {
                 sb.append(line);
             }
             JSONObject responseJson = (JSONObject) new JSONParser().parse(sb.toString());
+            log.info(String.valueOf(responseJson));
             JSONArray arr = (JSONArray) responseJson.get("content");
             if (arr != null && arr.size() > 0) {
                 //가장 최근에 갱신한 시간으로 교환 예정

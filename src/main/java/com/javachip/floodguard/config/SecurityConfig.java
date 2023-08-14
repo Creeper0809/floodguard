@@ -51,7 +51,6 @@ public class SecurityConfig {
                 .csrf((csrf) -> csrf
                         .disable()
                 )
-
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 ) // 세션을 사용하지 않음
