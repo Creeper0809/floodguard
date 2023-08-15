@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -61,9 +62,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        // 전송받은 Jwt Token이 만료되었으면 => 다음 필터 진행(인증 X) -> 블랙리스트에 추가해야하나?
-        if(JwtTokenUtil.isExpired(token, secretKey)) {
-            filterChain.doFilter(request, response);
+        // 전송받은 Jwt Token이 만료되었으면 => 401을 클라이언트에 보냄
+        if (JwtTokenUtil.isExpired(token, secretKey)) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return;
         }
 
