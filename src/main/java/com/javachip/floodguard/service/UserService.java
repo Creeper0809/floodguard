@@ -2,11 +2,17 @@ package com.javachip.floodguard.service;
 
 import com.javachip.floodguard.dto.RegisterRequestDTO;
 import com.javachip.floodguard.dto.LoginRequestDTO;
+import com.javachip.floodguard.entity.BlackList;
 import com.javachip.floodguard.entity.User;
+import com.javachip.floodguard.entity.WhiteList;
+import com.javachip.floodguard.jwt.JwtTokenUtil;
+import com.javachip.floodguard.repository.BlackListRepository;
 import com.javachip.floodguard.repository.UserRepository;
+import com.javachip.floodguard.repository.WhiteListRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,6 +32,12 @@ public class UserService {
 
     private final BCryptPasswordEncoder encoder;
 
+    private final BlackListRepository blackListRepository;
+
+    private final WhiteListRepository whiteListRepository;
+
+    @Value("${jwt.secret}")
+    private String secretKey;
     public boolean checkEmailDuplicate(String userid) { //이메일 중복 체크
         return userRepository.existsByEmail(userid);
     }
@@ -96,7 +108,24 @@ public class UserService {
         if(!encoder.matches(req.getPassword(),user.getPassword())) {
             return null;
         }
+
         return user;
+    }
+
+    public void logout(String header) {
+
+        // userid 가져오기
+        String token = String.valueOf(header).split(" ")[1];
+        String userid = JwtTokenUtil.getLoginUserid(token,secretKey);
+
+        //화이트리스트에서 userid로 정보 조회(username 조회)
+        WhiteList deleteuser = whiteListRepository.findByUserid(userid);    // (userid = username)
+
+        //화이트리스트에서 삭제
+        whiteListRepository.delete(deleteuser);
+
+        //블랙리스트에 추가
+        blackListRepository.save(BlackList.builder().userid(deleteuser.getUserid()).token(deleteuser.getToken()).build());
     }
     public User getLoginUserByLoginId(String loginId) {
 

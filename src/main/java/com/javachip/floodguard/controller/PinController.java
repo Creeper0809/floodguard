@@ -10,6 +10,7 @@ import com.javachip.floodguard.jwt.JwtTokenUtil;
 import com.javachip.floodguard.repository.FavoriteRepository;
 import com.javachip.floodguard.response.ListResponse;
 import com.javachip.floodguard.response.Response;
+import com.javachip.floodguard.service.FavoriteService;
 import com.javachip.floodguard.service.PinService;
 import com.javachip.floodguard.service.UserService;
 import jakarta.validation.constraints.Null;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 public class PinController {
     private final PinService pinService;
     private final UserService userService;
+    private final FavoriteService favoriteService;
     private final FavoriteRepository favoriteRepository;
     private final FavoriteDTO favoriteDTO;
 
@@ -45,7 +47,6 @@ public class PinController {
         var arr = pinService.getPinInfo(no);
         return Response.success(arr);
     }
-
     @PostMapping("/pin/register/{no}")
     public String pinRegister(@RequestHeader(value = "Authorization") String header, @PathVariable("no") Long no) {
 
@@ -55,5 +56,11 @@ public class PinController {
         favoriteRepository.save(favoriteDTO.toEntity(no,loginUser.getId()));
 
         return "관심사가 등록되었습니다.";
+    }
+    @GetMapping("/pin/pinlist/{userid}")
+    public ListResponse<FavoriteDTO> getAllFavortiePins(@PathVariable("userid") String userid) {
+        User loginUser = userService.getLoginUserByLoginId(userid);
+        var arr = favoriteService.getAllFavoritePins(loginUser.getId());
+        return ListResponse.success(arr);
     }
 }

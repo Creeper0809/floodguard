@@ -1,6 +1,8 @@
 package com.javachip.floodguard.jwt;
 
+import com.javachip.floodguard.entity.BlackList;
 import com.javachip.floodguard.entity.User;
+import com.javachip.floodguard.repository.BlackListRepository;
 import com.javachip.floodguard.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -17,6 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,6 +29,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private final UserService userService;
 
     private final String secretKey;
+
+    private final BlackListRepository blackListRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -46,7 +51,17 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         // 전송받은 값에서 'Bearer ' 뒷부분(Jwt Token) 추출
         String token = authorizationHeader.split(" ")[1];
 
-        // 전송받은 Jwt Token이 만료되었으면 => 다음 필터 진행(인증 X)
+        String finduser = JwtTokenUtil.getLoginUserid(token,secretKey);
+
+        Optional<BlackList> blackListOptional = blackListRepository.findByUserid(finduser);
+
+        // 전송받은 Jwt Token이 블랙리스트에 있으면 다음 필터 진행(인증x)
+        if(blackListOptional.isPresent()) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 전송받은 Jwt Token이 만료되었으면 => 다음 필터 진행(인증 X) -> 블랙리스트에 추가해야하나?
         if(JwtTokenUtil.isExpired(token, secretKey)) {
             filterChain.doFilter(request, response);
             return;

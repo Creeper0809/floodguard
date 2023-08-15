@@ -3,7 +3,9 @@ package com.javachip.floodguard.controller;
 import com.javachip.floodguard.dto.RegisterRequestDTO;
 import com.javachip.floodguard.dto.LoginRequestDTO;
 import com.javachip.floodguard.entity.User;
+import com.javachip.floodguard.entity.WhiteList;
 import com.javachip.floodguard.jwt.JwtTokenUtil;
+import com.javachip.floodguard.repository.WhiteListRepository;
 import com.javachip.floodguard.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 public class JwtLoginApiController {
 
     private final UserService userService;
+
+    private final WhiteListRepository whiteListRepository;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -85,8 +89,6 @@ public class JwtLoginApiController {
 
         User user = userService.login(loginRequestDTO);
 
-        String userid;
-
         // 로그인 아이디나 비밀번호가 틀린 경우 global error return
         if(user == null) {
             return "아이디나 비밀번호가 틀립니다.";
@@ -95,11 +97,23 @@ public class JwtLoginApiController {
         // 로그인 성공 => Jwt Token 발급
 
         long expireTimeMs = 1000 * 60 * 60;     // Token 유효 시간 = 60분
-        userid = user.getUsername();
+        String userid = user.getUsername();
         String jwtToken = JwtTokenUtil.createToken(userid, secretKey, expireTimeMs);
+
+        //화이트리스트에 추가
+
+        whiteListRepository.save(WhiteList.builder().userid(userid).token(jwtToken).build());
 
         return jwtToken;
     }
+
+    @PostMapping("/logout")
+    public String logout(@RequestHeader(value = "Authorization") String header) {
+        userService.logout(header);
+        return "로그아웃 되었습니다.";
+
+    }
+
     @GetMapping("/info")
     public String userInfo(@RequestHeader(value = "Authorization") String header) {
 
@@ -110,6 +124,7 @@ public class JwtLoginApiController {
         return String.format("loginId : %s\nnickname : %s\nrole : %s",
                 loginUser.getId(), loginUser.getUsername(), loginUser.getRole().name());
     }
+
     @GetMapping("/admin")
     public String adminPage() {
         return "관리자 페이지 접근 성공";

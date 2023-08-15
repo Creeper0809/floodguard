@@ -10,4 +10,5 @@ import java.util.Optional;
 
 public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     List<Favorite> findAllBypinid(Long pinid);
+    List<Favorite> findAllByUserid(Long userid);
 }
