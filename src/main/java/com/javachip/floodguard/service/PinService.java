@@ -38,6 +38,20 @@ public class PinService {
         }
         return result;
     }
+    public List<PinListResponseDTO> getAllPinsWithUserid(String user){
+        List<PinListResponseDTO> result = new ArrayList<>();
+        var arr = pinRepository.findAllByuserid(user);
+        for(var i : arr){
+            PinListResponseDTO temp = new PinListResponseDTO();
+            temp.setNo(i.getId());
+            temp.setCoordy(i.getCoordy());
+            temp.setCoordx(i.getCoordx());
+            temp.setName(i.getPos());
+            temp.setType(i.getType());
+            result.add(temp);
+        }
+        return result;
+    }
     public void createCCTVPin(){
         String[][] arr = {
                 {

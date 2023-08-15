@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
 @Slf4j
+@CrossOrigin
 public class JwtLoginApiController {
 
     private final UserService userService;

@@ -1,9 +1,6 @@
 package com.javachip.floodguard.controller;
 
-import com.javachip.floodguard.dto.FavoriteDTO;
-import com.javachip.floodguard.dto.LoginRequestDTO;
-import com.javachip.floodguard.dto.PinListResponseDTO;
-import com.javachip.floodguard.dto.PinMoreInfoResponseDTO;
+import com.javachip.floodguard.dto.*;
 import com.javachip.floodguard.entity.Favorite;
 import com.javachip.floodguard.entity.User;
 import com.javachip.floodguard.jwt.JwtTokenUtil;
@@ -23,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/pins")
 @Slf4j
+@CrossOrigin
 public class PinController {
     private final PinService pinService;
     private final UserService userService;
@@ -34,12 +32,26 @@ public class PinController {
     private String secretKey;
 
     @GetMapping("/pin")
-    public ListResponse<PinListResponseDTO> getAllPin(){
-        var arr = pinService.getAllPins();
-        return ListResponse.success(arr);
+    public ListResponse<PinListResponseDTO> getAllPin(@RequestHeader(value = "Authorization",required = false) String header){
+        if (header != null && header.startsWith("Bearer ")) {
+            String token = header.split(" ")[1];
+            String finduser = JwtTokenUtil.getLoginUserid(token,secretKey);
+            var arr = pinService.getAllPinsWithUserid(finduser);
+            return ListResponse.success(arr);
+        } else {
+            var arr = pinService.getAllPins();
+            return ListResponse.success(arr);
+        }
     }
     @PostMapping("/pin")
-    public Response createPin(@RequestBody LoginRequestDTO loginRequestDTO){
+    public Response createPin(@RequestBody CreatePinRequestDTO createPinRequestDTO, @RequestHeader(value = "Authorization",required = false) String header){
+        if (header == null) {
+            System.out.println(createPinRequestDTO.getPos());
+        }
+        else{
+            String token = String.valueOf(header).split(" ")[1];
+            String finduser = JwtTokenUtil.getLoginUserid(token,secretKey);
+        }
         return Response.success(null);
     }
     @GetMapping("/pin/{no}")

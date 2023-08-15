@@ -49,7 +49,6 @@ public class FloodAlertAPI {
             log.info(String.valueOf(responseJson));
             JSONArray arr = (JSONArray) responseJson.get("content");
             if (arr != null && arr.size() > 0) {
-                //가장 최근에 갱신한 시간으로 교환 예정
                 for (int i = 0; i < arr.size(); i++) {
                     JSONObject jsonObj = (JSONObject) arr.get(i);
                     FloodAPIRequestDTO temp = new FloodAPIRequestDTO();

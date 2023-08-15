@@ -18,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/alert")
 @Slf4j
+@CrossOrigin
 public class FloodAlert {
     private final FloodAlertService floodAlertService;
     @PostMapping("/favoritepin")
