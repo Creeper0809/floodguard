@@ -53,10 +53,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         String finduser = JwtTokenUtil.getLoginUserid(token,secretKey);
 
-        Optional<BlackList> blackListOptional = blackListRepository.findByUserid(finduser);
+        List<BlackList> blackListOptional = blackListRepository.findAllByUserid(finduser);
 
         // 전송받은 Jwt Token이 블랙리스트에 있으면 다음 필터 진행(인증x)
-        if(blackListOptional.isPresent()) {
+        if(blackListOptional.equals(token)) {
             filterChain.doFilter(request, response);
             return;
         }
