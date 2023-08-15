@@ -16,7 +16,6 @@ import java.util.List;
 public class FavoriteService {
 
     private final FavoriteRepository favoriteRepository;
-
     public List<FavoriteDTO> getAllFavoritePins(Long userid){
         List<FavoriteDTO> result = new ArrayList<>();
         var arr = favoriteRepository.findAllByUserid(userid);
@@ -28,6 +27,4 @@ public class FavoriteService {
         }
         return result;
     }
-
-
 }

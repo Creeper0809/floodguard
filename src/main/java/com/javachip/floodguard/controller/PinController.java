@@ -47,7 +47,6 @@ public class PinController {
         var arr = pinService.getPinInfo(no);
         return Response.success(arr);
     }
-
     @PostMapping("/pin/register/{no}")
     public String pinRegister(@RequestHeader(value = "Authorization") String header, @PathVariable("no") Long no) {
 
@@ -64,5 +63,4 @@ public class PinController {
         var arr = favoriteService.getAllFavoritePins(loginUser.getId());
         return ListResponse.success(arr);
     }
-
 }

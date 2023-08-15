@@ -1,6 +1,7 @@
 package com.javachip.floodguard.config;
 
 import com.javachip.floodguard.jwt.JwtTokenFilter;
+import com.javachip.floodguard.repository.BlackListRepository;
 import com.javachip.floodguard.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
 
     private final UserService userService;
+
+    private final BlackListRepository blackListRepository;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -55,7 +58,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 ) // 세션을 사용하지 않음
 
-                .addFilterBefore(new JwtTokenFilter(userService, secretKey), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenFilter(userService, secretKey, blackListRepository), UsernamePasswordAuthenticationFilter.class)
 
                 .authorizeRequests((requests) -> requests
                         .requestMatchers("/", "/css/**", "/images/**", "/js/**","/api/v1/users/**").permitAll()
