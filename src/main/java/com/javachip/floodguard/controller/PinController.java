@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/pins")
@@ -36,6 +38,7 @@ public class PinController {
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.split(" ")[1];
             String finduser = JwtTokenUtil.getLoginUserid(token,secretKey);
+            System.out.println(finduser + "님의 핀을 가져오기");
             var arr = pinService.getAllPinsWithUserid(finduser);
             return ListResponse.success(arr);
         } else {
@@ -51,26 +54,39 @@ public class PinController {
         else{
             String token = String.valueOf(header).split(" ")[1];
             String finduser = JwtTokenUtil.getLoginUserid(token,secretKey);
+            var i = pinService.createUserPin(createPinRequestDTO,finduser);
+            System.out.println(i.getId());
+            return Response.success(i.getId());
         }
         return Response.success(null);
     }
+    @DeleteMapping("/pin/{no}")
+    public Response deletePin(@PathVariable("no")Long no){
+        pinService.removePin(no);
+        return Response.success("");
+    }
     @GetMapping("/pin/{no}")
-    public Response<PinMoreInfoResponseDTO> getPin(@PathVariable("no")Long no){
+    public Response getPin(@PathVariable("no")Long no){
         var arr = pinService.getPinInfo(no);
         return Response.success(arr);
     }
-    @PostMapping("/pin/register/{no}")
+    @GetMapping("/pin/register/{no}")
     public String pinRegister(@RequestHeader(value = "Authorization") String header, @PathVariable("no") Long no) {
-
         String token = String.valueOf(header).split(" ")[1];
         String finduser = JwtTokenUtil.getLoginUserid(token,secretKey);
         User loginUser = userService.getLoginUserByLoginId(finduser);
-        favoriteRepository.save(favoriteDTO.toEntity(no,loginUser.getId()));
-
+        Optional<Favorite> f = favoriteRepository.findBypinidAndUserid(no,loginUser.getId());
+        if(f.isPresent()){
+            favoriteRepository.delete(f.get());
+        }
+        else{
+            favoriteRepository.save(favoriteDTO.toEntity(no,loginUser.getId()));
+        }
         return "관심사가 등록되었습니다.";
     }
     @GetMapping("/pin/pinlist/{userid}")
     public ListResponse<FavoriteDTO> getAllFavortiePins(@PathVariable("userid") String userid) {
+
         User loginUser = userService.getLoginUserByLoginId(userid);
         var arr = favoriteService.getAllFavoritePins(loginUser.getId());
         return ListResponse.success(arr);

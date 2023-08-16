@@ -131,13 +131,15 @@ public class UserService {
 
         Optional<User> optionalUser;
 
+        if(loginId == null) return null;
+
         if(isValidEmail(loginId)) {
+            System.out.println("22");
             optionalUser = userRepository.findByEmail(loginId);
         } else {
+            System.out.println(loginId);
             optionalUser = userRepository.findByUsername(loginId);
         }
-
-        if(loginId == null) return null;
 
         if(optionalUser.isEmpty()) return null;
 

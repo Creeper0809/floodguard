@@ -2,10 +2,12 @@ package com.javachip.floodguard.controller;
 
 import com.javachip.floodguard.dto.RegisterRequestDTO;
 import com.javachip.floodguard.dto.LoginRequestDTO;
+import com.javachip.floodguard.dto.UserinfoDTO;
 import com.javachip.floodguard.entity.User;
 import com.javachip.floodguard.entity.WhiteList;
 import com.javachip.floodguard.jwt.JwtTokenUtil;
 import com.javachip.floodguard.repository.WhiteListRepository;
+import com.javachip.floodguard.response.Response;
 import com.javachip.floodguard.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -116,14 +118,16 @@ public class JwtLoginApiController {
     }
 
     @GetMapping("/info")
-    public String userInfo(@RequestHeader(value = "Authorization") String header) {
+    public Response<UserinfoDTO> userInfo(@RequestHeader(value = "Authorization") String header) {
 
         String token = String.valueOf(header).split(" ")[1];
         String finduser = JwtTokenUtil.getLoginUserid(token,secretKey);
         User loginUser = userService.getLoginUserByLoginId(finduser);
-
-        return String.format("loginId : %s\nnickname : %s\nrole : %s",
-                loginUser.getId(), loginUser.getUsername(), loginUser.getRole().name());
+        var info = new UserinfoDTO();
+        info.setUserid(loginUser.getId());
+        info.setUsername(loginUser.getUsername());
+        info.setRole(loginUser.getRole().name());
+        return Response.success(info);
     }
 
     @GetMapping("/admin")

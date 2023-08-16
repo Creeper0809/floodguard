@@ -24,4 +24,5 @@ public class Pin {
     private String pos;
     private String alertpos;
     private int type;
+    private String userid;
 }

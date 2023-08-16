@@ -96,4 +96,12 @@ public class CCTVApi{
         double result = Math.sqrt(Math.pow(x1 - dx2,2) + Math.pow(y1-dy2,2) * Math.cos(y1) * Math.cos(dy2));
         return result;
     }
+    public double getDistance(String x1,String x2,String y1,String y2){
+        double dx2 = Double.parseDouble(x2);
+        double dy2 = Double.parseDouble(y2);
+        double dx1 = Double.parseDouble(x1);
+        double dy1 = Double.parseDouble(y1);
+        double result = Math.sqrt(Math.pow(dx1 - dx2,2) + Math.pow(dy1-dy2,2) * Math.cos(dy1) * Math.cos(dy2));
+        return result;
+    }
 }
