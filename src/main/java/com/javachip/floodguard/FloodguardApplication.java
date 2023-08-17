@@ -5,14 +5,20 @@ import com.javachip.floodguard.api.CCTVApi;
 import com.javachip.floodguard.api.FloodAlertAPI;
 import com.javachip.floodguard.dto.MessageDTO;
 import com.javachip.floodguard.service.FloodAlertService;
+import com.javachip.floodguard.service.ImageAnalysisSevice;
 import com.javachip.floodguard.service.PinService;
 import com.javachip.floodguard.service.SmsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -23,28 +29,17 @@ import java.util.StringJoiner;
 @SpringBootApplication
 @RequiredArgsConstructor
 @EnableScheduling
+@EnableJpaRepositories
+@EnableAspectJAutoProxy
 public class FloodguardApplication {
 	@Autowired
 	private final FloodAlertAPI floodAlert;
 	private final FloodAlertService floodAlertService;
 	@Autowired
 	private final PinService service;
+	private final ImageAnalysisSevice imageAnalysisSevice;
 	public static void main(String[] args) {
 		SpringApplication.run(FloodguardApplication.class, args);
-	}
-	@Scheduled(fixedRate = 115000)
-	public void test() throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, URISyntaxException, JsonProcessingException {
-//		var result = cctv.getCCTV("126.800000","34.900000","127.890000","35.100000");
-//		for(var i : result){
-//			System.out.println(i.name);
-//		}
-//		var a = floodAlert.getFloodAlert();
-//		for(var i: a){
-//			System.out.println(i.getWhere());
-//			System.out.println(i.getDate());
-//			System.out.println(i.getKind());
-//		}
-		//service.sendSms(MessageDTO.builder().to("01037258283").content("히히").build());
 	}
 	@Scheduled(fixedRate = 1000 * 60 * 5)
 	public void sendFloodAlert() throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
@@ -54,5 +49,22 @@ public class FloodguardApplication {
 				floodAlertService.alert(i.getWhere(),i.getKind());
 			}
 		}
+	}
+	@Scheduled(fixedRate = 1000*60*2)
+	public void getCCTV(){
+		service.createCCTVPin();
+	}
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry
+						.addMapping("/**")
+						.allowedOrigins("http://35.216.52.133:3000", "http://localhost:3000", "http://localhost:8080", "http://localhost:8081", "https://allergysafe.life")
+						.allowedHeaders("*")
+						.allowedMethods("*");
+			}
+		};
 	}
 }

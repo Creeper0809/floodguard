@@ -8,6 +8,7 @@ import com.javachip.floodguard.repository.FavoriteRepository;
 import com.javachip.floodguard.response.ListResponse;
 import com.javachip.floodguard.response.Response;
 import com.javachip.floodguard.service.FavoriteService;
+import com.javachip.floodguard.service.ImageAnalysisSevice;
 import com.javachip.floodguard.service.PinService;
 import com.javachip.floodguard.service.UserService;
 import jakarta.validation.constraints.Null;

@@ -18,6 +18,7 @@ public class Pin {
 
     @Column
     private String url;
+    private String iurl;
     private String coordx;
     private String coordy;
     private String comment;

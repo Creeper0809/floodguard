@@ -81,7 +81,7 @@ public class SmsService {
         messages.add(messageDto);
 
         SmsRequestDTO request = SmsRequestDTO.builder()
-                .type("SMS")
+                .type("LMS")
                 .contentType("COMM")
                 .countryCode("82")
                 .from(phone)
