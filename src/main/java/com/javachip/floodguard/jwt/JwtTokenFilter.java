@@ -64,7 +64,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         // 전송받은 Jwt Token이 만료되었으면 => 401을 클라이언트에 보냄
         if (JwtTokenUtil.isExpired(token, secretKey)) {
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            filterChain.doFilter(request, response);
             return;
         }
 
