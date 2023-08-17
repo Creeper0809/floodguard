@@ -31,7 +31,7 @@ public class FloodAlertService {
         for(var i : alertedPosPin){
             var concernPeople = favoriteRepository.findAllBypinid(i.getId());
             for(var j : concernPeople){
-                var person = userRepository.findByid(j.getUserid()).get();
+                var person = userRepository.findById(j.getUserid()).get();
                 if(!alert.containsKey(person.getUsername())){
                     alert.put(person.getUsername(),new ArrayList<>());
                     alert.get(person.getUsername()).add(person.getPhonenumber());

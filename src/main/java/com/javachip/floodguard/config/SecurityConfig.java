@@ -24,7 +24,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Slf4j
 @EnableWebSecurity
 @RequiredArgsConstructor
-@EnableMethodSecurity
 public class SecurityConfig {
 
     private final UserService userService;
@@ -68,18 +67,20 @@ public class SecurityConfig {
                 .authorizeRequests((requests) -> requests
 
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/", "/css/**", "/images/**", "/js/**","/api/v1/users/**","/api/v1/search/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/pins/pin/**").permitAll()
+                        .requestMatchers("/", "/css/**", "/images/**", "/js/**","/api/v1/users/**","/upload/**").permitAll()
+                        //테스트용
+                        .requestMatchers("/api/v1/pins/**","/api/v1/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
-                        .loginPage("/api/vi/users/login").permitAll()
-                        .loginProcessingUrl("/api/vi/users/login")
+                        .loginPage("/login").permitAll()
+                        .loginProcessingUrl("/login-Proc")
                         .defaultSuccessUrl("/")
                         .failureUrl("/login?error")
                 )
                 .logout((logout) -> logout
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/api/vi/users/logout"))
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                         .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
                         .permitAll()

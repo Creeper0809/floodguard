@@ -14,6 +14,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -113,10 +114,17 @@ public class JwtLoginApiController {
     }
 
     @PostMapping("/logout")
-    public String logout(@RequestHeader(value = "Authorization") @NotBlank String header) {
+    public Response logout(@RequestHeader(value = "Authorization") @NotBlank String header) {
         userService.logout(header);
-        return "로그아웃 되었습니다.";
+        return Response.success(null);
 
+    }
+
+    @DeleteMapping("/secession")
+    public Response secession(@RequestHeader(value = "Authorization") @NotBlank String header) {
+        userService.secession(header);
+        log.info("1");
+        return Response.success(null);
     }
 
     @GetMapping("/info")
