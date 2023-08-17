@@ -13,4 +13,7 @@ public class ListResponse<T>{
     public static <T> ListResponse<T> success(List<T> result){
         return new ListResponse<>(200, result);
     }
+    public static ListResponse<Void> error(int resultCode){
+        return new ListResponse(resultCode, null);
+    }
 }

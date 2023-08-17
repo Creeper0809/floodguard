@@ -12,9 +12,11 @@ import com.javachip.floodguard.response.Response;
 import com.microsoft.azure.cognitiveservices.vision.computervision.models.ImageTag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 @Slf4j
@@ -52,7 +54,7 @@ public class PinService {
         }
         return result;
     }
-    public void createCCTVPin(){
+    public void createCCTVPin() throws IOException, ParseException {
         String[][] arr = {
                 {
                         "서울시(광진교)","37.54438996824168","127.11436739783055"

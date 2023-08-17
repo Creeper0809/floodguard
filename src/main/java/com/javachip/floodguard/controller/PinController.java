@@ -79,6 +79,9 @@ public class PinController {
         String token = String.valueOf(header).split(" ")[1];
         String finduser = JwtTokenUtil.getLoginUserid(token,secretKey);
         User loginUser = userService.getLoginUserByLoginId(finduser);
+        if(loginUser == null){
+            return "없는 유저입니다";
+        }
         Optional<Favorite> f = favoriteRepository.findBypinidAndUserid(no,loginUser.getId());
         if(f.isPresent()){
             favoriteRepository.delete(f.get());
@@ -89,9 +92,12 @@ public class PinController {
         return "관심사가 등록되었습니다.";
     }
     @GetMapping("/pin/pinlist/{userid}")
-    public ListResponse<FavoriteDTO> getAllFavortiePins(@PathVariable("userid") @NotBlank String userid) {
+    public ListResponse getAllFavortiePins(@PathVariable("userid") @NotBlank String userid) {
 
         User loginUser = userService.getLoginUserByLoginId(userid);
+        if(loginUser == null){
+            return ListResponse.error(401);
+        }
         var arr = favoriteService.getAllFavoritePins(loginUser.getId());
         return ListResponse.success(arr);
     }

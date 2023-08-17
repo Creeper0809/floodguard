@@ -120,11 +120,14 @@ public class JwtLoginApiController {
     }
 
     @GetMapping("/info")
-    public Response<UserinfoDTO> userInfo(@RequestHeader(value = "Authorization") @NotBlank String header) {
+    public Response userInfo(@RequestHeader(value = "Authorization") @NotBlank String header) {
 
         String token = String.valueOf(header).split(" ")[1];
         String finduser = JwtTokenUtil.getLoginUserid(token,secretKey);
         User loginUser = userService.getLoginUserByLoginId(finduser);
+        if(loginUser == null){
+            return Response.error(401);
+        }
         var info = new UserinfoDTO();
         info.setUserid(loginUser.getId());
         info.setUsername(loginUser.getUsername());

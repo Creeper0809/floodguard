@@ -22,9 +22,8 @@ import java.util.ArrayList;
 public class CCTVApi{
     @Value("${cctv.publickey}")
     private String publickey;
-    public ArrayList<CCTVRequestDTO> getCCTV(String minCoordx, String minCoordy, String maxCoordx, String maxCoordy,String type){
+    public ArrayList<CCTVRequestDTO> getCCTV(String minCoordx, String minCoordy, String maxCoordx, String maxCoordy,String type) throws IOException, ParseException {
         ArrayList<CCTVRequestDTO> result = new ArrayList<>();
-        try {
             StringBuilder urlBuilder = new StringBuilder("https://openapi.its.go.kr:9443/cctvInfo") /*URL*/
                                                     .append("?" + URLEncoder.encode("apiKey", "UTF-8") + "=" + URLEncoder.encode(publickey, "UTF-8")) /*공개키*/
                                                     .append("&" + URLEncoder.encode("type","UTF-8") + "=" + URLEncoder.encode("all", "UTF-8")) /*도로유형*/
@@ -39,7 +38,7 @@ public class CCTVApi{
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Content-type", "text/xml;charset=UTF-8");
 
-            BufferedReader rd;
+            BufferedReader rd = null;
             if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
                 rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             } else {
@@ -56,7 +55,6 @@ public class CCTVApi{
 
             if(responseJson2 == null)
                 return result;
-            System.out.println(responseJson2);
             if((int)responseJson2.get("datacount") == 1){
                 JSONObject jsonObj = (JSONObject) responseJson2.get("data");
                 CCTVRequestDTO temp = new CCTVRequestDTO();
@@ -82,12 +80,7 @@ public class CCTVApi{
             }
             rd.close();
             conn.disconnect();
-        }
-        catch (IOException e){
-        }
-        catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+
         return result;
     }
     public double getDistance(Double x1,String x2,Double y1,String y2){

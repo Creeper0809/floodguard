@@ -26,16 +26,9 @@ public class ImageAnalysisSevice {
         String pathToRemoteImage = url;
         List<VisualFeatureTypes> featuresToExtractFromRemoteImage = new ArrayList<>();
         featuresToExtractFromRemoteImage.add(VisualFeatureTypes.TAGS);
-        try {
-            ImageAnalysis analysis = compVisClient.computerVision().analyzeImage().withUrl(pathToRemoteImage)
+        ImageAnalysis analysis = compVisClient.computerVision().analyzeImage().withUrl(pathToRemoteImage)
                     .withVisualFeatures(featuresToExtractFromRemoteImage).execute();
-            return analysis.tags();
-        }
-        catch (Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-        return null;
+        return analysis.tags();
     }
     public ComputerVisionClient Authenticate(String key, String endpoint){
         System.out.println(endpoint);

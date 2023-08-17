@@ -67,6 +67,7 @@ public class FloodAlertAPI {
             conn.disconnect();
         }
         catch (IOException e){
+            throw new RuntimeException(e);
         }
         catch (ParseException e) {
             throw new RuntimeException(e);

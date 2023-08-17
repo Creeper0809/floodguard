@@ -11,4 +11,7 @@ public class Response <T>{
     public static <T> Response<T> success(T result){
         return new Response<>(200, result);
     }
+    public static Response<Void> error(int resultCode){
+        return new Response(resultCode, null);
+    }
 }

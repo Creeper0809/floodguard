@@ -9,6 +9,7 @@ import com.javachip.floodguard.service.ImageAnalysisSevice;
 import com.javachip.floodguard.service.PinService;
 import com.javachip.floodguard.service.SmsService;
 import lombok.RequiredArgsConstructor;
+import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,6 +21,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
@@ -51,7 +53,7 @@ public class FloodguardApplication {
 		}
 	}
 	@Scheduled(fixedRate = 1000*60*2)
-	public void getCCTV(){
+	public void getCCTV() throws IOException, ParseException {
 		service.createCCTVPin();
 	}
 	@Bean
