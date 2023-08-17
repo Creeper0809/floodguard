@@ -2,11 +2,9 @@ package com.javachip.floodguard.dto;
 
 import com.javachip.floodguard.entity.User;
 import com.javachip.floodguard.entity.UserRole;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @NoArgsConstructor
 @ToString
@@ -14,14 +12,15 @@ import lombok.ToString;
 @Setter
 public class RegisterRequestDTO {
 
-
+    @Email
     private String email;
-
+    @NotBlank
     private String username;
-
+    @NotBlank
     private String password;
+    @NotBlank
     private String passwordCheck;
-
+    @NotBlank
     private String phonenumber;
 
     public User toEntity(String encodedPassword) {

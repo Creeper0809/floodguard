@@ -11,10 +11,14 @@ import com.javachip.floodguard.service.FavoriteService;
 import com.javachip.floodguard.service.ImageAnalysisSevice;
 import com.javachip.floodguard.service.PinService;
 import com.javachip.floodguard.service.UserService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -33,7 +37,6 @@ public class PinController {
 
     @Value("${jwt.secret}")
     private String secretKey;
-
     @GetMapping("/pin")
     public ListResponse<PinListResponseDTO> getAllPin(@RequestHeader(value = "Authorization",required = false) String header){
         if (header != null && header.startsWith("Bearer ")) {
@@ -48,7 +51,7 @@ public class PinController {
         }
     }
     @PostMapping("/pin")
-    public Response createPin(@RequestBody CreatePinRequestDTO createPinRequestDTO, @RequestHeader(value = "Authorization",required = false) String header){
+    public Response createPin(@RequestBody @Valid CreatePinRequestDTO createPinRequestDTO, @RequestHeader(value = "Authorization",required = false) @NotBlank String header){
         if (header == null) {
             System.out.println(createPinRequestDTO.getPos());
         }
@@ -62,17 +65,17 @@ public class PinController {
         return Response.success(null);
     }
     @DeleteMapping("/pin/{no}")
-    public Response deletePin(@PathVariable("no")Long no){
+    public Response deletePin(@PathVariable("no") @Min(0) Long no){
         pinService.removePin(no);
         return Response.success("");
     }
     @GetMapping("/pin/{no}")
-    public Response getPin(@PathVariable("no")Long no){
+    public Response getPin(@PathVariable("no") @Min(0) Long no){
         var arr = pinService.getPinInfo(no);
         return Response.success(arr);
     }
     @GetMapping("/pin/register/{no}")
-    public String pinRegister(@RequestHeader(value = "Authorization") String header, @PathVariable("no") Long no) {
+    public String pinRegister(@RequestHeader(value = "Authorization") @NotBlank String header, @PathVariable("no") @Min(0) Long no) {
         String token = String.valueOf(header).split(" ")[1];
         String finduser = JwtTokenUtil.getLoginUserid(token,secretKey);
         User loginUser = userService.getLoginUserByLoginId(finduser);
@@ -86,7 +89,7 @@ public class PinController {
         return "관심사가 등록되었습니다.";
     }
     @GetMapping("/pin/pinlist/{userid}")
-    public ListResponse<FavoriteDTO> getAllFavortiePins(@PathVariable("userid") String userid) {
+    public ListResponse<FavoriteDTO> getAllFavortiePins(@PathVariable("userid") @NotBlank String userid) {
 
         User loginUser = userService.getLoginUserByLoginId(userid);
         var arr = favoriteService.getAllFavoritePins(loginUser.getId());

@@ -61,7 +61,7 @@ public class FloodguardApplication {
 			public void addCorsMappings(CorsRegistry registry) {
 				registry
 						.addMapping("/**")
-						.allowedOrigins("http://35.216.52.133:3000", "http://localhost:3000", "http://localhost:8080", "http://localhost:8081", "https://allergysafe.life")
+						.allowedOrigins("http://35.216.52.133:3000", "http://localhost:3000", "http://localhost:8080", "http://localhost:8081", "https://floodguard.live")
 						.allowedHeaders("*")
 						.allowedMethods("*");
 			}

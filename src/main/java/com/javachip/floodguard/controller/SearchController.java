@@ -3,6 +3,7 @@ package com.javachip.floodguard.controller;
 import com.javachip.floodguard.dto.SearchPostRequestDTO;
 import com.javachip.floodguard.response.ListResponse;
 import com.javachip.floodguard.service.SearchService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class SearchController {
     private final SearchService searchService;
     @PostMapping("/do")
-    public void addSearch(@RequestBody SearchPostRequestDTO searchPostRequestDTO){
+    public void addSearch(@RequestBody @Valid SearchPostRequestDTO searchPostRequestDTO){
         searchService.addSearch(searchPostRequestDTO);
     }
     @GetMapping("/info")
