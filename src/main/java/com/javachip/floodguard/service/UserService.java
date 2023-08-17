@@ -127,6 +127,27 @@ public class UserService {
         //블랙리스트에 추가
         blackListRepository.save(BlackList.builder().userid(deleteuser.getUserid()).token(deleteuser.getToken()).build());
     }
+
+    public void secession(String header) {
+
+        // userid 가져오기
+        String token = String.valueOf(header).split(" ")[1];
+        String userid = JwtTokenUtil.getLoginUserid(token,secretKey);
+
+        //화이트리스트에서 userid로 정보 조회(username 조회)
+        WhiteList deleteuser = whiteListRepository.findByUserid(userid);    // (userid = username)
+
+        //화이트리스트에서 삭제
+        whiteListRepository.delete(deleteuser);
+
+        //유저에서 삭제
+        userRepository.delete(userRepository.findAllByUsername(deleteuser.getUserid()));
+
+        //블랙리스트에 추가
+        blackListRepository.save(BlackList.builder().userid(deleteuser.getUserid()).token(deleteuser.getToken()).build());
+
+    }
+
     public User getLoginUserByLoginId(String loginId) {
 
         Optional<User> optionalUser;

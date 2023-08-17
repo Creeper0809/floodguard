@@ -66,8 +66,6 @@ public class SecurityConfig {
 
                 .authorizeRequests((requests) -> requests
 
-                
-
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/", "/css/**", "/images/**", "/js/**","/api/v1/users/**","/upload/**").permitAll()
                         //테스트용
