@@ -1,14 +1,12 @@
 package com.javachip.floodguard.controller;
 
+import com.javachip.floodguard.service.SatisfactionService;
+import com.javachip.floodguard.dto.BlackListDTO;
 import com.javachip.floodguard.service.UploadFileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 
@@ -26,5 +24,26 @@ public class FileController {
         System.out.println(file.getName());
         System.out.println("파일 올라옴");
         return "파일이 업로드 되었습니다.";
+    }
+
+    @RestController
+    @RequestMapping("/satisfactions")
+    public static class SatisfactionController {
+
+        private final SatisfactionService satisfactionService;
+
+        public SatisfactionController(SatisfactionService satisfactionService) {
+            this.satisfactionService = satisfactionService;
+        }
+
+        @PostMapping
+        public BlackListDTO.SatisfactionResponseDTO submitSatisfaction(@RequestBody BlackListDTO.SatisfactionRequestDTO requestDTO) {
+            return satisfactionService.submitSatisfaction(requestDTO);
+        }
+
+        @GetMapping("/average")
+        public double getAverageSatisfaction() {
+            return satisfactionService.calculateAverageSatisfaction();
+        }
     }
 }
