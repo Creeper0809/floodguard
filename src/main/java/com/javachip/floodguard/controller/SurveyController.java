@@ -1,6 +1,5 @@
 package com.javachip.floodguard.controller;
 
-import com.javachip.floodguard.api.Survey;
 import com.javachip.floodguard.repository.SurveyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
