@@ -8,6 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -45,7 +48,6 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(user1, user2, admin);
     }
 
-
 */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -61,9 +63,15 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtTokenFilter(userService, secretKey, blackListRepository), UsernamePasswordAuthenticationFilter.class)
 
                 .authorizeRequests((requests) -> requests
-                        .requestMatchers("/", "/css/**", "/images/**", "/js/**","/api/v1/users/**").permitAll()
+
+                
+
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/", "/css/**", "/images/**", "/js/**","/api/v1/users/**","/upload/**").permitAll()
+
                         //테스트용
                         .requestMatchers("/api/v1/pins/**","/api/v1/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
@@ -81,4 +89,9 @@ public class SecurityConfig {
 
         return http.build();
     }
+    @Bean
+    public AuthenticationManager authenticationManager(final AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
 }

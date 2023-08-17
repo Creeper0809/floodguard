@@ -135,5 +135,8 @@ public class JwtLoginApiController {
         return "관리자 페이지 접근 성공";
     }
     @GetMapping("/test")
-    public String testPage(){return "ㅁㄴㅇㅁㄴㅇ";}
+    public String testPage(){
+        System.out.println("ㅁㄴㅇ");
+        return "ㅁㄴㅇㅁㄴㅇ";
+    }
 }
