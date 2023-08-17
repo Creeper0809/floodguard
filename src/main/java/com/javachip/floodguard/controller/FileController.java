@@ -25,25 +25,4 @@ public class FileController {
         System.out.println("파일 올라옴");
         return "파일이 업로드 되었습니다.";
     }
-
-    @RestController
-    @RequestMapping("/satisfactions")
-    public static class SatisfactionController {
-
-        private final SatisfactionService satisfactionService;
-
-        public SatisfactionController(SatisfactionService satisfactionService) {
-            this.satisfactionService = satisfactionService;
-        }
-
-        @PostMapping
-        public BlackListDTO.SatisfactionResponseDTO submitSatisfaction(@RequestBody BlackListDTO.SatisfactionRequestDTO requestDTO) {
-            return satisfactionService.submitSatisfaction(requestDTO);
-        }
-
-        @GetMapping("/average")
-        public double getAverageSatisfaction() {
-            return satisfactionService.calculateAverageSatisfaction();
-        }
-    }
 }
