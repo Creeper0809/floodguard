@@ -1,23 +1,21 @@
-package com.javachip.floodguard.api;
-
+package com.javachip.floodguard.api.survey;
 
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.List;
 
+
 @Data
 @Entity
-public class Question {
+public class Survey {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
     private Long id;
 
-    private String content;
+    private String title;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-
-    private List<Option> options;
-
+    private List<Question> questions;
 }
