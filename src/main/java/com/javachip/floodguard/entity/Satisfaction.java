@@ -1,4 +1,4 @@
-package com.javachip.floodguard.api;
+package com.javachip.floodguard.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

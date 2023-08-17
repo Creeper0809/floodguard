@@ -1,8 +1,9 @@
 package com.javachip.floodguard.service;
 
-import com.javachip.floodguard.api.Satisfaction;
+import com.javachip.floodguard.entity.Satisfaction;
 import com.javachip.floodguard.repository.SatisfactionRepository;
-import com.javachip.floodguard.dto.BlackListDTO;
+import com.javachip.floodguard.dto.SatisfactionRequestDTO;
+import com.javachip.floodguard.dto.SatisfactionResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,13 +13,13 @@ public class SatisfactionService {
 
     private final SatisfactionRepository satisfactionRepository;
 
-    public BlackListDTO.SatisfactionResponseDTO submitSatisfaction(BlackListDTO.SatisfactionRequestDTO requestDTO) {
+    public SatisfactionResponseDTO submitSatisfaction(SatisfactionRequestDTO requestDTO) {
         Satisfaction satisfaction = new Satisfaction();
         satisfaction.setRating(requestDTO.getRating());
 
         satisfaction = satisfactionRepository.save(satisfaction);
 
-        BlackListDTO.SatisfactionResponseDTO responseDTO = new BlackListDTO.SatisfactionResponseDTO();
+        SatisfactionResponseDTO responseDTO = new SatisfactionResponseDTO();
         responseDTO.setId(satisfaction.getId());
         responseDTO.setRating(satisfaction.getRating());
 
