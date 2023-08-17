@@ -48,6 +48,7 @@ dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation('org.projectlombok:lombok:1.18.22')
+	implementation group : "com.microsoft.azure.cognitiveservices", name : "azure-cognitiveservices-computervision", version : "1.0.9-beta"
 }
 
 tasks.named('test') {
