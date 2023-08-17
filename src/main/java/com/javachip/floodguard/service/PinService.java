@@ -9,21 +9,20 @@ import com.javachip.floodguard.repository.PinRepository;
 import com.javachip.floodguard.repository.UserRepository;
 import com.javachip.floodguard.response.ListResponse;
 import com.javachip.floodguard.response.Response;
+import com.microsoft.azure.cognitiveservices.vision.computervision.models.ImageTag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class PinService {
     private final PinRepository pinRepository;
+    private final ImageAnalysisSevice imageAnalysisSevice;
     private final CCTVApi cctv;
     public List<PinListResponseDTO> getAllPins(){
         List<PinListResponseDTO> result = new ArrayList<>();
@@ -99,22 +98,31 @@ public class PinService {
                 }
         };
         //서울 좌표
-        var result = cctv.getCCTV("126.734086","37.413294","127.269311","37.715133");
+        var result = cctv.getCCTV("126.734086","37.413294","127.269311","37.715133","2");
+        var resultImage = cctv.getCCTV("126.734086","37.413294","127.269311","37.715133","3");
         List<Pin> toSavePin = new ArrayList<>();
-        for(var i : result){
-            if(pinRepository.existsBypos(i.name)){
+
+        for(var j = 0;j<result.size();j++){
+            var i = result.get(j);
+            var image = resultImage.get(j);
+            Optional<Pin> dbpin = pinRepository.findByCoordxAndCoordyAndPos(String.valueOf(i.coordx),String.valueOf(i.coordy),i.name);
+            Pin tempPin = new Pin();
+            if(dbpin.isPresent()){
+                tempPin = dbpin.get();
+                tempPin.setUrl(i.getVideoURL());
+                tempPin.setIurl(image.getVideoURL());
+                toSavePin.add(tempPin);
                 continue;
             }
             double sort = Double.MAX_VALUE;
             String temp = "";
-            for(var j : arr){
-                double distance = cctv.getDistance(i.coordx,j[2],i.coordy,j[1]);
+            for(var k : arr){
+                double distance = cctv.getDistance(i.coordx,k[2],i.coordy,k[1]);
                 if(distance < sort){
                     sort = distance;
-                    temp = j[0];
+                    temp = k[0];
                 }
             }
-            Pin tempPin = new Pin();
             tempPin.setAlertpos(temp);
             tempPin.setPos(i.name);
             tempPin.setType(0);
@@ -127,23 +135,37 @@ public class PinService {
     public PinMoreInfoResponseDTO getPinInfo(Long no){
         var pin = pinRepository.findById(no).get();
         var response = new PinMoreInfoResponseDTO();
-        if(no < 200){
-            double x = Double.parseDouble(pin.getCoordx());
-            double y = Double.parseDouble(pin.getCoordy());
-            var result = cctv.getCCTV(Double.toString(x - 0.001),Double.toString(y - 0.001),Double.toString(x + 0.001),Double.toString(y + 0.001));
-            if(result.size() == 0){
-                return null;
-            }
-            for(var i : result) {
-                if (i.getName().equals(pin.getPos())) {
-                    response.setUrl(result.get(0).getVideoURL());
-                    response.setComment(result.get(0).getName() + "의 영상");
-                    break;
+        if(pin.getType() != 2){
+            var image = imageAnalysisSevice.startAnalyze(pin.getIurl());
+            StringJoiner sb = new StringJoiner(", ");
+            StringBuilder comment = new StringBuilder();
+            boolean flag = false;
+            for(ImageTag i : image){
+                if(i.name().equals("flood")){
+                    flag = true;
+                }
+                if(i.confidence() > 0.8){
+                    sb.add(i.name());
                 }
             }
+            comment.append(sb.toString() + "로 이루어진 사진입니다.\n");
+            if(flag){
+                comment.append("홍수 위험이 있습니다.");
+            }
+            else {
+                comment.append("홍수 위험이 없습니다");
+            }
+            response.setComment(comment.toString());
+            if(pin.getType() == 0){
+                response.setUrl(pin.getUrl());
+            }
+            else{
+                response.setUrl(pin.getIurl());
+            }
         }
-        else {
+        else{
             response.setComment(pin.getComment());
+            response.setUrl(pin.getUrl());
         }
         return response;
     }
