@@ -14,7 +14,7 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/upload")
+@RequestMapping("/api/v1/upload")
 public class FileController {
 
     @Autowired
@@ -23,9 +23,8 @@ public class FileController {
     @PostMapping("/file")
     public String fileUpload(@RequestParam("file") MultipartFile file) throws IOException {
         uploadFileService.fileupload(file);
-
-
-
+        System.out.println(file.getName());
+        System.out.println("파일 올라옴");
         return "파일이 업로드 되었습니다.";
     }
 }
