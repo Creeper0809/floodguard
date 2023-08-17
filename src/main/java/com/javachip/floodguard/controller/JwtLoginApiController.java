@@ -9,6 +9,8 @@ import com.javachip.floodguard.jwt.JwtTokenUtil;
 import com.javachip.floodguard.repository.WhiteListRepository;
 import com.javachip.floodguard.response.Response;
 import com.javachip.floodguard.service.UserService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +32,7 @@ public class JwtLoginApiController {
     private String secretKey;
 
     @PostMapping("/register")
-    public ResponseEntity<String> join(@RequestBody RegisterRequestDTO registerRequestDTO) {
+    public ResponseEntity<String> join(@RequestBody @Valid RegisterRequestDTO registerRequestDTO) {
 
         log.info(registerRequestDTO.getPassword());
 
@@ -88,7 +90,7 @@ public class JwtLoginApiController {
 
 }
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequestDTO loginRequestDTO) {
+    public String login(@RequestBody @Valid LoginRequestDTO loginRequestDTO) {
 
         User user = userService.login(loginRequestDTO);
 
@@ -111,14 +113,14 @@ public class JwtLoginApiController {
     }
 
     @PostMapping("/logout")
-    public String logout(@RequestHeader(value = "Authorization") String header) {
+    public String logout(@RequestHeader(value = "Authorization") @NotBlank String header) {
         userService.logout(header);
         return "로그아웃 되었습니다.";
 
     }
 
     @GetMapping("/info")
-    public Response<UserinfoDTO> userInfo(@RequestHeader(value = "Authorization") String header) {
+    public Response<UserinfoDTO> userInfo(@RequestHeader(value = "Authorization") @NotBlank String header) {
 
         String token = String.valueOf(header).split(" ")[1];
         String finduser = JwtTokenUtil.getLoginUserid(token,secretKey);
@@ -129,14 +131,8 @@ public class JwtLoginApiController {
         info.setRole(loginUser.getRole().name());
         return Response.success(info);
     }
-
-    @GetMapping("/admin")
-    public String adminPage() {
-        return "관리자 페이지 접근 성공";
-    }
     @GetMapping("/test")
-    public String testPage(){
-        System.out.println("ㅁㄴㅇ");
-        return "ㅁㄴㅇㅁㄴㅇ";
+    public String test(){
+        return "테스트 테스트";
     }
 }
