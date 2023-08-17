@@ -15,8 +15,7 @@ import java.nio.file.StandardCopyOption;
 @Service
 public class UploadFileService {
 
-    @Value("${app.upload.dir:${user.home}}")
-    private String fileDir;
+    private String fileDir = "D:\\Programming\\test";
     public void fileupload(MultipartFile multipartFile) throws IOException {
         Path copyOfLocation = Paths.get(fileDir + File.separator + StringUtils.cleanPath(multipartFile.getOriginalFilename()));
         try {
@@ -24,7 +23,7 @@ public class UploadFileService {
             // copyOfLocation (저장위치)로 파일을 쓴다.
             // copy의 옵션은 기존에 존재하면 REPLACE(대체한다), 오버라이딩 한다
             Files.copy(multipartFile.getInputStream(), copyOfLocation, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
+        } catch (IOException e){
             e.printStackTrace();
             throw new IOException("Could not store file : " + multipartFile.getOriginalFilename());
         }
