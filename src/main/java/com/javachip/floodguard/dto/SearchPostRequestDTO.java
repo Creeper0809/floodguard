@@ -1,5 +1,6 @@
 package com.javachip.floodguard.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @AllArgsConstructor
@@ -8,5 +9,6 @@ import lombok.*;
 @Getter
 @Builder
 public class SearchPostRequestDTO {
+    @NotBlank
     private String searchval;
 }
