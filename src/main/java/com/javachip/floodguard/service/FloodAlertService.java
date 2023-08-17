@@ -13,6 +13,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,15 +27,33 @@ public class FloodAlertService {
     private final SmsService smsService;
     public void alert(String pos , String kind) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
         var alertedPosPin = pinRepository.findAllByalertpos(pos);
+        HashMap<String, List<String>> alert = new HashMap<>();
         for(var i : alertedPosPin){
             var concernPeople = favoriteRepository.findAllBypinid(i.getId());
             for(var j : concernPeople){
                 var person = userRepository.findByid(j.getUserid()).get();
-                var message =MessageDTO.builder()
-                                .to(person.getPhonenumber())
-                                .content("[홍수 위험]\n" + "관심사로 등록하신 "+i.getPos()+"지역에서 홍수 위험이 있습니다.\n 안전에 유의하세요.\n"+kind);
-                smsService.sendSms(message.build());
+                if(!alert.containsKey(person.getUsername())){
+                    alert.put(person.getUsername(),new ArrayList<>());
+                    alert.get(person.getUsername()).add(person.getPhonenumber());
+                }
+                alert.get(person.getUsername()).add(i.getPos());
             }
+        }
+        for(var i : alert.keySet()){
+            var person = alert.get(i);
+            var content = new StringBuilder("[홍수 위험]\n"+person.get(1));
+            if(person.size() > 2){
+                content.append("지역 외 " + (person.size()-2) +"곳에서");
+            }
+            else{
+                content.append("지역에서");
+            }
+            content.append(" 홍수 위험이 있습니다.\n안전에 유의하세요.\n"+kind);
+            System.out.println(content.toString());
+            var message =MessageDTO.builder()
+                    .to(person.get(0))
+                    .content(content.toString());
+            smsService.sendSms(message.build());
         }
     }
 }

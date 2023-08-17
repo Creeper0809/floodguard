@@ -22,13 +22,13 @@ import java.util.ArrayList;
 public class CCTVApi{
     @Value("${cctv.publickey}")
     private String publickey;
-    public ArrayList<CCTVRequestDTO> getCCTV(String minCoordx, String minCoordy, String maxCoordx, String maxCoordy){
+    public ArrayList<CCTVRequestDTO> getCCTV(String minCoordx, String minCoordy, String maxCoordx, String maxCoordy,String type){
         ArrayList<CCTVRequestDTO> result = new ArrayList<>();
         try {
             StringBuilder urlBuilder = new StringBuilder("https://openapi.its.go.kr:9443/cctvInfo") /*URL*/
                                                     .append("?" + URLEncoder.encode("apiKey", "UTF-8") + "=" + URLEncoder.encode(publickey, "UTF-8")) /*공개키*/
                                                     .append("&" + URLEncoder.encode("type","UTF-8") + "=" + URLEncoder.encode("all", "UTF-8")) /*도로유형*/
-                                                    .append("&" + URLEncoder.encode("cctvType","UTF-8") + "=" + URLEncoder.encode("2", "UTF-8")) /*CCTV유형*/
+                                                    .append("&" + URLEncoder.encode("cctvType","UTF-8") + "=" + URLEncoder.encode(type, "UTF-8")) /*CCTV유형*/
                                                     .append("&" + URLEncoder.encode("minX","UTF-8") + "=" + URLEncoder.encode(minCoordx, "UTF-8")) /*최소경도영역*/
                                                     .append("&" + URLEncoder.encode("maxX","UTF-8") + "=" + URLEncoder.encode(maxCoordx, "UTF-8")) /*최대경도영역*/
                                                     .append("&" + URLEncoder.encode("minY","UTF-8") + "=" + URLEncoder.encode(minCoordy, "UTF-8")) /*최소위도영역*/

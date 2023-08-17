@@ -5,10 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PinRepository extends JpaRepository<Pin, Long> {
     List<Pin> findAllByalertpos(String pos);
     @Query(value = "SELECT * FROM pin WHERE userid = \"root\" or userid = :userid",nativeQuery = true)
     List<Pin> findAllByuserid(String userid);
     boolean existsBypos(String name);
+    Optional<Pin> findByCoordxAndCoordyAndPos(String coordx,String coordy,String Pos);
 }
