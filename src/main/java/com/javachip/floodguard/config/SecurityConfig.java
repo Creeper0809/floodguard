@@ -45,7 +45,6 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(user1, user2, admin);
     }
 
-
 */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -61,7 +60,7 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtTokenFilter(userService, secretKey, blackListRepository), UsernamePasswordAuthenticationFilter.class)
 
                 .authorizeRequests((requests) -> requests
-                        .requestMatchers("/", "/css/**", "/images/**", "/js/**","/api/v1/users/**").permitAll()
+                        .requestMatchers("/", "/css/**", "/images/**", "/js/**","/api/v1/users/**","/upload/**").permitAll()
                         //테스트용
                         .requestMatchers("/api/v1/pins/**","/api/v1/**").permitAll()
                         .anyRequest().authenticated()
