@@ -19,7 +19,7 @@ public class User {
     private String username;
     private String email;
     private String password;
-    private String phonenumber;
+    private int score;
     UserRole role;
 
 }

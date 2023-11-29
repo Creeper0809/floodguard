@@ -17,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 @Slf4j
@@ -26,6 +29,7 @@ public class PinService {
     private final PinRepository pinRepository;
     private final ImageAnalysisSevice imageAnalysisSevice;
     private final CCTVApi cctv;
+    private final FloodAlertService floodAlertService;
     public List<PinListResponseDTO> getAllPins(){
         List<PinListResponseDTO> result = new ArrayList<>();
         var arr = pinRepository.findAllByuserid("root");
@@ -54,7 +58,7 @@ public class PinService {
         }
         return result;
     }
-    public void createCCTVPin() throws IOException, ParseException {
+    public void createCCTVPin() throws IOException, ParseException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException {
         String[][] arr = {
                 {
                         "서울시(광진교)","37.54438996824168","127.11436739783055"
@@ -131,6 +135,14 @@ public class PinService {
             tempPin.setCoordx(Double.toString(i.coordx));
             tempPin.setCoordy(Double.toString(i.coordy));
             toSavePin.add(tempPin);
+        }
+        for(var i : toSavePin){
+            var image = imageAnalysisSevice.startAnalyze(i.getIurl());
+            for(ImageTag j : image) {
+                if (j.name().equals("flood")) {
+                    floodAlertService.alert(i.getPos(),"실제 경보");
+                }
+            }
         }
         pinRepository.saveAll(toSavePin);
     }

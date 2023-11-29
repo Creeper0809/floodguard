@@ -1,15 +1,18 @@
 package com.javachip.floodguard.controller;
 
+import com.javachip.floodguard.dto.PinRequestDTO;
 import com.javachip.floodguard.dto.RegisterRequestDTO;
 import com.javachip.floodguard.dto.LoginRequestDTO;
-import com.javachip.floodguard.dto.UserinfoDTO;
+import com.javachip.floodguard.entity.Favorite;
 import com.javachip.floodguard.entity.User;
 import com.javachip.floodguard.entity.WhiteList;
 import com.javachip.floodguard.jwt.JwtTokenUtil;
 import com.javachip.floodguard.repository.WhiteListRepository;
+import com.javachip.floodguard.response.ListResponse;
 import com.javachip.floodguard.response.Response;
 import com.javachip.floodguard.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,12 +21,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
 @Slf4j
 @CrossOrigin
-public class JwtLoginApiController {
+public class UserController {
 
     private final UserService userService;
 
@@ -123,27 +128,30 @@ public class JwtLoginApiController {
     @DeleteMapping("/secession")
     public Response secession(@RequestHeader(value = "Authorization") @NotBlank String header) {
         userService.secession(header);
-        log.info("1");
         return Response.success(null);
     }
 
-    @GetMapping("/info")
-    public Response userInfo(@RequestHeader(value = "Authorization") @NotBlank String header) {
-
+    @GetMapping("/{uuid}")
+    public Response getUserInfo(@PathVariable("uuid") long uuid) {
+        var userInfo = userService.getUserByUUID(uuid);
+        return Response.success(userInfo);
+    }
+    @PostMapping("/pin")
+    public String registerPin(@RequestHeader(value = "Authorization") @NotBlank String header, @RequestBody PinRequestDTO pinRequest) {
+        String token = String.valueOf(header).split(" ")[1];
+        String userid = JwtTokenUtil.getLoginUserid(token,secretKey);
+        userService.registerPinByUser(userid,pinRequest.getPinId());
+        return ResponseEntity.status(HttpStatus.OK).bo;
+    }
+    @DeleteMapping("/pin")
+    public String deregisterPin(@RequestHeader(value = "Authorization") @NotBlank String header, @PathVariable("no") @Min(0) Long no) {
         String token = String.valueOf(header).split(" ")[1];
         String finduser = JwtTokenUtil.getLoginUserid(token,secretKey);
-        User loginUser = userService.getLoginUserByLoginId(finduser);
-        if(loginUser == null){
-            return Response.error(401);
-        }
-        var info = new UserinfoDTO();
-        info.setUserid(loginUser.getId());
-        info.setUsername(loginUser.getUsername());
-        info.setRole(loginUser.getRole().name());
-        return Response.success(info);
+        return "실패";
     }
-    @GetMapping("/test")
-    public String test(){
-        return "테스트 테스트";
+    @GetMapping("{userid}/pins")
+    public String getAllFavortiePins(@PathVariable("userid") @NotBlank String userid) {
+        User loginUser = userService.getUserById(userid);
+        return "실패";
     }
 }

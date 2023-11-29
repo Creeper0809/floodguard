@@ -1,20 +1,22 @@
 package com.javachip.floodguard.service;
 
+import com.javachip.floodguard.dto.PinRequestDTO;
 import com.javachip.floodguard.dto.RegisterRequestDTO;
 import com.javachip.floodguard.dto.LoginRequestDTO;
+import com.javachip.floodguard.dto.UserinfoDTO;
 import com.javachip.floodguard.entity.BlackList;
+import com.javachip.floodguard.entity.Favorite;
 import com.javachip.floodguard.entity.User;
 import com.javachip.floodguard.entity.WhiteList;
 import com.javachip.floodguard.jwt.JwtTokenUtil;
 import com.javachip.floodguard.repository.BlackListRepository;
+import com.javachip.floodguard.repository.FavoriteRepository;
 import com.javachip.floodguard.repository.UserRepository;
 import com.javachip.floodguard.repository.WhiteListRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +37,8 @@ public class UserService {
     private final BlackListRepository blackListRepository;
 
     private final WhiteListRepository whiteListRepository;
+
+    private final FavoriteRepository favoriteRepository;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -147,21 +151,52 @@ public class UserService {
         blackListRepository.save(BlackList.builder().userid(deleteuser.getUserid()).token(deleteuser.getToken()).build());
 
     }
-
-    public User getLoginUserByLoginId(String loginId) {
+    /**
+     * ID를 통해 userinfo를 가져옴
+     *
+     * @author 임용헌
+     * @param id 아이디
+     * @return 유저 정보
+     */
+    public User getUserById(String id) {
 
         Optional<User> optionalUser;
 
-        if(loginId == null) return null;
+        if(id == null) return null;
 
-        if(isValidEmail(loginId)) {
-            optionalUser = userRepository.findByEmail(loginId);
+        if(isValidEmail(id)) {
+            optionalUser = userRepository.findByEmail(id);
         } else {
-            optionalUser = userRepository.findByUsername(loginId);
+            optionalUser = userRepository.findByUsername(id);
         }
 
         if(optionalUser.isEmpty()) return null;
 
         return optionalUser.get();
+    }
+
+    /**
+     * UUID를 통해 userinfo를 가져옴
+     *
+     * @author 임용헌
+     * @param uuid 유저의 고유 번호
+     * @return 유저 정보
+     */
+    public UserinfoDTO getUserByUUID(long uuid){
+        var user = userRepository.findById(uuid).get();
+        return new UserinfoDTO(user);
+    }
+
+    public void registerPinByUser(String userid, long pinId){
+        var user = getUserById(userid);
+        if(favoriteRepository.existsByUseridAndPinid(user.getId(),pinId)){
+            // 존재함 예외 던지기
+            return;
+        }
+        var favorite = new Favorite().builder()
+                .userid(user.getId())
+                .pinid(pinId)
+                .build();
+        favoriteRepository.save(favorite);
     }
 }

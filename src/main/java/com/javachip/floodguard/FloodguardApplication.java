@@ -1,15 +1,10 @@
 package com.javachip.floodguard;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.javachip.floodguard.api.CCTVApi;
 import com.javachip.floodguard.api.FloodAlertAPI;
-import com.javachip.floodguard.dto.MessageDTO;
 import com.javachip.floodguard.service.FloodAlertService;
 import com.javachip.floodguard.service.ImageAnalysisSevice;
 import com.javachip.floodguard.service.PinService;
-import com.javachip.floodguard.service.SmsService;
 import lombok.RequiredArgsConstructor;
-import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,16 +12,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.StringJoiner;
 
 @SpringBootApplication
 @RequiredArgsConstructor
@@ -42,19 +29,6 @@ public class FloodguardApplication {
 	private final ImageAnalysisSevice imageAnalysisSevice;
 	public static void main(String[] args) {
 		SpringApplication.run(FloodguardApplication.class, args);
-	}
-	@Scheduled(fixedRate = 1000 * 60 * 5)
-	public void sendFloodAlert() throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
-		var temp = floodAlert.getFloodAlert();
-		for(var i : temp){
-			if(i.getKind().contains("발령") && i.getWhere().contains("서울시")){
-				floodAlertService.alert(i.getWhere(),i.getKind());
-			}
-		}
-	}
-	@Scheduled(fixedRate = 1000*60*2)
-	public void getCCTV() throws IOException, ParseException {
-		service.createCCTVPin();
 	}
 	@Bean
 	public WebMvcConfigurer corsConfigurer() {

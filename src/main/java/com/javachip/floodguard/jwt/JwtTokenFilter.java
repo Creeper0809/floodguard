@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,7 +19,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -72,7 +70,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         String loginId = JwtTokenUtil.getLoginUserid(token, secretKey);
 
         // 추출한 loginId로 User 찾아오기
-        User loginUser = userService.getLoginUserByLoginId(loginId);
+        User loginUser = userService.getUserById(loginId);
 
         if(loginUser == null){
             return;

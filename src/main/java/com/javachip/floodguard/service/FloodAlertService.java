@@ -1,7 +1,6 @@
 package com.javachip.floodguard.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.javachip.floodguard.dto.MessageDTO;
 import com.javachip.floodguard.repository.FavoriteRepository;
 import com.javachip.floodguard.repository.PinRepository;
 import com.javachip.floodguard.repository.UserRepository;
@@ -24,7 +23,6 @@ public class FloodAlertService {
     private final PinRepository pinRepository;
     private final FavoriteRepository favoriteRepository;
     private final UserRepository userRepository;
-    private final SmsService smsService;
     public void alert(String pos , String kind) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
         var alertedPosPin = pinRepository.findAllByalertpos(pos);
         HashMap<String, List<String>> alert = new HashMap<>();
@@ -50,10 +48,6 @@ public class FloodAlertService {
             }
             content.append(" 홍수 위험이 있습니다.\n안전에 유의하세요.\n"+kind);
             System.out.println(content.toString());
-            var message =MessageDTO.builder()
-                    .to(person.get(0))
-                    .content(content.toString());
-            smsService.sendSms(message.build());
         }
     }
 }
