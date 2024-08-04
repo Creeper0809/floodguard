@@ -140,8 +140,7 @@ public class UserController {
     public String registerPin(@RequestHeader(value = "Authorization") @NotBlank String header, @RequestBody PinRequestDTO pinRequest) {
         String token = String.valueOf(header).split(" ")[1];
         String userid = JwtTokenUtil.getLoginUserid(token,secretKey);
-        userService.registerPinByUser(userid,pinRequest.getPinId());
-        return ResponseEntity.status(HttpStatus.OK).bo;
+        userService.registerPinByUser(userid,pinRequest.getPinId());return ResponseEntity.status(HttpStatus.OK).bo;
     }
     @DeleteMapping("/pin")
     public String deregisterPin(@RequestHeader(value = "Authorization") @NotBlank String header, @PathVariable("no") @Min(0) Long no) {
